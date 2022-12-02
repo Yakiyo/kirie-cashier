@@ -6,7 +6,6 @@ Question for the project can be found in the [**ques**](./ques/) directory. The 
 
 **Unimplemented:** 
 - Could not implement discount features as I couldn't understand what RM discounts were.
-- Reducing stock amount when buying. (TBA)
 
 ## Example
 
