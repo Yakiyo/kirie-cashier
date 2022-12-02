@@ -39,12 +39,41 @@ fn main() {
                     println!("Cart is empty. Total price is 0\n");
                     continue;
                 }
-                let mut cost = 0.0;
+                let mut price = 0.0;
                 c.iter().for_each(|i| {
-                    cost += items[i.item].price * i.amount as f64;
+                    price += items[i.item].price * i.amount as f64;
                     items[i.item].stock -= i.amount;
+                    // RM2 discount implementation
+                    if items[i.item].id == "A0002" && i.amount >= 4 {
+                        println!("Your purchase contains more than 3 A0002 purchase. You get RM2 discount for every 4");
+                        let grp = (i.amount / 4).abs();
+                        price -= (grp * 2) as f64;
+                    }
                 });
-                println!("Total price is: {cost}");
+
+                // Combo discount
+                let b1_pos = items.iter().position(|x| x.id == "B0001").unwrap();
+                let b3_pos = items.iter().position(|x| x.id == "B0003").unwrap();
+                let b1_c = c.iter().find(|e| e.item == b1_pos);
+                let b3_c = c.iter().find(|e| e.item == b3_pos);
+                // Make sure neither of em is none, since its a combo deal
+                if b1_c.is_some() && b3_c.is_some() {
+                    let b1_c = b1_c.unwrap();
+                    let b3_c = b3_c.unwrap();
+                    let min_val = if b1_c.amount < b3_c.amount {
+                        b1_c.amount
+                    } else {
+                        b3_c.amount
+                    };
+                    price -= min_val as f64;
+                }
+
+                // Net purchase discount
+                if price >= 100.0 {
+                    println!("Your total purchase is above 100. Applying 15% discount.");
+                    price = price - ((15.0 / 100.0) * price);
+                }
+                println!("Total price is: {price}");
             },
             _ => {
                 println!("Unknown input. Please specify one from the menu.");
