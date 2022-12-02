@@ -12,7 +12,7 @@ fn main() {
     let content = fs::read_to_string("./items.txt")
         .expect("Could not find item list file in root directory.");
     
-    let items = Item::parse(&content)
+    let mut items = Item::parse(&content)
         .into_iter()
         .map(|t| {
             let v = Item::build(t);
@@ -33,7 +33,18 @@ fn main() {
                 continue;
             },
             "1" => {
-                buy(&items);
+                let c = buy(&items);
+                println!("Calculating total amount...");
+                if c.is_empty() {
+                    println!("Cart is empty. Total price is 0\n");
+                    continue;
+                }
+                let mut cost = 0.0;
+                c.iter().for_each(|i| {
+                    cost += items[i.item].price * i.amount as f64;
+                    items[i.item].stock -= i.amount;
+                });
+                println!("Total price is: {cost}");
             },
             _ => {
                 println!("Unknown input. Please specify one from the menu.");

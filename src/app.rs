@@ -45,10 +45,6 @@ impl Item {
             stock,
         }
     }
-
-    // pub fn reduce(&mut self, amount: i64) {
-    //     self.stock -= amount;
-    // }
 }
 
 impl fmt::Display for Item {
@@ -62,30 +58,36 @@ impl fmt::Display for Item {
 }
 
 #[derive(Debug)]
-struct Cart<'a> {
-    item: &'a Item,
-    amount: i64,
-    // pos: usize
+pub struct Cart {
+    pub item: usize,
+    pub amount: i64,
 }
 
-// TODO: Reduce stock amount from Item when bought
-pub fn buy(v: &Vec<Item>) {
+impl  fmt::Display for Cart {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "Item index: {}, amount: {}",
+            self.item, self.amount
+        )
+    }
+}
+
+pub fn buy(v: &Vec<Item>) -> Vec<Cart> {
     let mut cart: Vec<Cart> = Vec::new();
-    // let mut vit = v.iter_mut();
     loop {
         let code = input("Provide an item id to add to cart").to_lowercase();
         if code == "-1" {
             break;
         }
-
-        let (_pos, item) = match v.iter().position(|x| x.id.to_lowercase() == code) {
+        let index = match v.iter().position(|x| x.id.to_lowercase() == code) {
+            Some(n) => n,
             None => {
                 println!("Invalid item code provided. Please provide a valid one.");
                 continue;
-            },
-            Some(t) => (t, &v[t]),
-            
+            }
         };
+        let item = &v[index];
         if item.stock == 0 {
             println!("This item is currently out of stock. Please try a different one");
             continue;
@@ -109,23 +111,72 @@ pub fn buy(v: &Vec<Item>) {
             }
             break am;
         };
-        cart.push(Cart { 
-            item,
+        cart.push(Cart {
+            item: index,
             amount,
-            // pos
-        });
+        })
     }
-    println!("Calculating total amount...");
-    if cart.is_empty() {
-        println!("Cart is empty. Total price is 0\n");
-    } else {
-        let mut cost: f64 = 0.0;
-        cart.iter().for_each(|e| {
-            cost += e.item.price * e.amount as f64;
-            // v[e.pos].reduce(e.amount);
-        });
-        println!("Total purchase price: {cost}\n");
-    }
+    cart
 }
+
+// // TODO: Reduce stock amount from Item when bought
+// pub fn buy(v: &Vec<Item>) {
+//     let mut cart: Vec<Cart> = Vec::new();
+//     // let mut vit = v.iter_mut();
+//     loop {
+//         let code = input("Provide an item id to add to cart").to_lowercase();
+//         if code == "-1" {
+//             break;
+//         }
+
+//         let (_pos, item) = match v.iter().position(|x| x.id.to_lowercase() == code) {
+//             None => {
+//                 println!("Invalid item code provided. Please provide a valid one.");
+//                 continue;
+//             },
+//             Some(t) => (t, &v[t]),
+            
+//         };
+//         if item.stock == 0 {
+//             println!("This item is currently out of stock. Please try a different one");
+//             continue;
+//         }
+//         println!("Selected item {}. Available stock {} \nPlease provide the amount: ", item.name, item.stock);
+//         let amount = loop {
+//             let am: i64 = match input("").parse() {
+//                 Ok(v) => v,
+//                 Err(_) => {
+//                     println!("Invalid input provided. Please provide a valid positive integer amount");
+//                     continue;
+//                 }
+//             };
+//             if am > item.stock {
+//                 println!("Amount {am} is greater than {}. Please provide a value equal or less than stock.", item.stock);
+//                 continue;
+//             }
+//             if am <= 0 {
+//                 println!("Amount cannot be less than 1. Must be at least or more than 1. Please try again");
+//                 continue;
+//             }
+//             break am;
+//         };
+//         cart.push(Cart { 
+//             item,
+//             amount,
+//             // pos
+//         });
+//     }
+//     println!("Calculating total amount...");
+//     if cart.is_empty() {
+//         println!("Cart is empty. Total price is 0\n");
+//     } else {
+//         let mut cost: f64 = 0.0;
+//         cart.iter().for_each(|e| {
+//             cost += e.item.price * e.amount as f64;
+//             // v[e.pos].reduce(e.amount);
+//         });
+//         println!("Total purchase price: {cost}\n");
+//     }
+// }
 
 
