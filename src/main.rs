@@ -14,10 +14,7 @@ fn main() {
     
     let mut items = Item::parse(&content)
         .into_iter()
-        .map(|t| {
-            let v = Item::build(t);
-            v
-        })
+        .map(Item::build)
         .collect::<Vec<Item>>();
     
     println!("Welcome to MYSTORE:");
